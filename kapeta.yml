@@ -1,0 +1,267 @@
+kind: core/resource-type-internal
+metadata:
+  name: kapeta/resource-type-rabbitmq-publisher
+  title: RabbitMQ Publisher
+  description: Add a RabbitMQ publisher to your blocks
+  visibility: public
+spec:
+  icon:
+    type: url
+    value: https://storage.googleapis.com/kapeta-public-cdn/icons/rabbitmq.svg
+
+  ports:
+    - type: amqp
+
+  versioning:
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - update
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - delete
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - create
+      increment: minor
+
+  schema:
+    type: object
+    required:
+      - port
+      - payloadType
+    properties:
+      port:
+        $ref: /core/port
+
+      payloadType:
+        type: object
+        properties:
+          type:
+            type: string
+          structure:
+            $ref: /core/entity
+
+  connection:
+    schema:
+      type: object
+      properties:
+        routing:
+          oneOf:
+            - type: string
+            - type: object
+              properties:
+                headers:
+                  type: object
+                  additionalProperties:
+                    type: string
+                matchAll:
+                  type: boolean
+
+---
+kind: core/resource-type-internal
+metadata:
+  name: kapeta/resource-type-rabbitmq-subscriber
+  title: RabbitMQ Subscriber
+  description: Add a rabbitmq subscriber to your blocks
+  visibility: public
+spec:
+  icon:
+    type: url
+    value: https://storage.googleapis.com/kapeta-public-cdn/icons/rabbitmq.svg
+  ports:
+    - type: amqp
+  versioning:
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - update
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - delete
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - create
+      increment: minor
+  schema:
+    type: object
+    required:
+      - port
+      - payloadType
+    properties:
+      port:
+        $ref: /core/port
+      payloadType:
+        type: object
+        properties:
+          type:
+            type: string
+          structure:
+            $ref: /core/entity
+---
+kind: core/resource-type-internal
+metadata:
+  name: kapeta/resource-type-rabbitmq-exchange
+  title: RabbitMQ Exchange
+  description: Add an exchange to RabbitMQ
+  visibility: public
+spec:
+  icon:
+    type: url
+    value: https://storage.googleapis.com/kapeta-public-cdn/icons/rabbitmq.svg
+  ports:
+    - type: amqp
+  versioning:
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - update
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - delete
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - create
+      increment: minor
+  schema:
+    type: object
+    required:
+      - port
+      - payloadType
+      - exchangeType
+    properties:
+      port:
+        $ref: /core/port
+      exchangeType:
+        type: string
+        enum:
+          - direct
+          - fanout
+          - topic
+          - headers
+      payloadType:
+        type: object
+        properties:
+          type:
+            type: string
+          structure:
+            $ref: /core/entity
+---
+kind: core/resource-type-internal
+metadata:
+  name: kapeta/resource-type-rabbitmq-queue
+  title: RabbitMQ Queue
+  description: Add a queue to RabbitMQ
+  visibility: public
+spec:
+  icon:
+    type: url
+    value: https://storage.googleapis.com/kapeta-public-cdn/icons/rabbitmq.svg
+  ports:
+    - type: amqp
+  versioning:
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - update
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - delete
+      increment: major
+    - paths:
+        - spec.payloadType.structure.properties.*
+      on:
+        - create
+      increment: minor
+  schema:
+    type: object
+    required:
+      - port
+      - payloadType
+      - exchangeType
+    properties:
+      port:
+        $ref: /core/port
+      exclusive:
+        type: boolean
+      durable:
+        type: boolean
+      autoDelete:
+        type: boolean
+      ttl:
+        type: integer
+      queueSizeLimit:
+        type: integer
+      payloadType:
+        type: object
+        properties:
+          type:
+            type: string
+          structure:
+            $ref: /core/entity
+---
+kind: core/block-type-operator
+metadata:
+  name: kapeta/block-type-rabbitmq
+  title: RabbitMQ
+  description: Provides a RabbitMQ cluster to your plan
+  visibility: public
+spec:
+  icon:
+    type: url
+    value: https://storage.googleapis.com/kapeta-public-cdn/icons/rabbitmq.svg
+  dependencies:
+    - path: spec.consumers.kind
+      type: Consumers
+    - path: spec.providers.kind
+      type: Providers
+  configuration:
+    schema:
+      type: object
+      required:
+        - domain
+        - paths
+      properties:
+        exchangeType:
+          type: string
+          enum:
+            - direct
+            - fanout
+            - topic
+            - headers
+  schema:
+    type: object
+    properties:
+      entities:
+        $ref: /core/entity-list
+      consumers:
+        $ref: /core/block-resource-list
+      providers:
+        $ref: /core/block-resource-list
+  local:
+    image: rabbitmq:3.12.12-management-alpine
+    ports:
+      management:
+        port: 15672
+        type: tcp
+      amqp:
+        port: 5672
+        type: tcp
+    env:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+      RABBITMQ_DEFAULT_VHOST: vhost
