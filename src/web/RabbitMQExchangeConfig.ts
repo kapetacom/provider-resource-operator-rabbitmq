@@ -32,7 +32,6 @@ export const RabbitMQExchangeConfig: IResourceTypeProvider<Metadata, RabbitMQBas
     renameEntityReferences,
     resolveEntities,
     validate: createValidator(true),
-    consumableKind: KIND_PUBLISHER,
     converters: [
         {
             fromKind: KIND_PUBLISHER,
@@ -59,7 +58,7 @@ export const RabbitMQExchangeConfig: IResourceTypeProvider<Metadata, RabbitMQBas
                 };
 
                 return {
-                    kind: KIND_EXCHANGE,
+                    kind: publisherResource.kind,
                     metadata: cloneDeep(publisherResource.metadata),
                     spec: {
                         payloadType: cloneDeep(publisherSpec.payloadType),

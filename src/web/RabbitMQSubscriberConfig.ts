@@ -36,12 +36,12 @@ const RabbitMQSubscriberConfig: IResourceTypeProvider<Metadata, RabbitMQBaseSpec
             fromKind: KIND_QUEUE,
             inspectComponentType: RabbitMQConnectionInspector,
             createFrom: (data: ResourceWithSpec<RabbitMQBaseSpec>): ResourceWithSpec<RabbitMQBaseSpec> => {
-                const publisherResource = data as RabbitMQPublisherResource;
-                if (!publisherResource.kind || !publisherResource.kind?.startsWith(KIND_SUBSCRIBER)) {
-                    throw new Error(`Invalid resource kind: ${publisherResource.kind}. Expected ${KIND_SUBSCRIBER}`);
+                const queueResource = data as RabbitMQPublisherResource;
+                if (!queueResource.kind || !queueResource.kind?.startsWith(KIND_SUBSCRIBER)) {
+                    throw new Error(`Invalid resource kind: ${queueResource.kind}. Expected ${KIND_SUBSCRIBER}`);
                 }
 
-                const publisherSpec = publisherResource.spec ?? {
+                const publisherSpec = queueResource.spec ?? {
                     port: {
                         type: 'amqp',
                     },
@@ -57,8 +57,8 @@ const RabbitMQSubscriberConfig: IResourceTypeProvider<Metadata, RabbitMQBaseSpec
                 };
 
                 return {
-                    kind: KIND_SUBSCRIBER,
-                    metadata: cloneDeep(publisherResource.metadata),
+                    kind: queueResource.kind,
+                    metadata: cloneDeep(queueResource.metadata),
                     spec: {
                         payloadType: cloneDeep(publisherSpec.payloadType),
                         port: cloneDeep(publisherSpec.port),

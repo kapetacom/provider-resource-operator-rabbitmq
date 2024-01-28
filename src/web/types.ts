@@ -39,30 +39,44 @@ export interface RabbitMQExchangeSpec extends RabbitMQBaseSpec {
 
 export interface RabbitMQQueueSpec extends RabbitMQBaseSpec {}
 
+export interface HeaderBindings {
+    matchAll: boolean;
+    headers: { [key: string]: string };
+}
+
+export type QueueRouting = string | HeaderBindings;
+
+export interface QueueBindingSchema {
+    queue: string;
+    routing?: QueueRouting;
+}
+
+export interface ExchangeBindingsSchema {
+    exchange: string;
+    bindings?: QueueBindingSchema[];
+}
+
+export interface RabbitMQBindingsSchema {
+    exchanges?: ExchangeBindingsSchema[];
+}
+
 export interface RabbitMQBlockSpec {
-    entities: EntityList;
-    consumers: RabbitMQExchangeResource[];
-    publishers: RabbitMQQueueResource[];
+    entities?: EntityList;
+    consumers?: RabbitMQExchangeResource[];
+    providers?: RabbitMQQueueResource[];
+    bindings?: RabbitMQBindingsSchema;
 }
 
 export interface RabbitMQBlockDefinition {
-    kind: typeof KIND_BLOCK;
+    kind: string;
     metadata: Metadata;
     spec: RabbitMQBlockSpec;
 }
 
-export interface RabbitMQSubscriberResource extends ResourceWithSpec<RabbitMQSubscriberSpec> {
-    kind: typeof KIND_SUBSCRIBER;
-}
+export interface RabbitMQSubscriberResource extends ResourceWithSpec<RabbitMQSubscriberSpec> {}
 
-export interface RabbitMQPublisherResource extends ResourceWithSpec<RabbitMQPublisherSpec> {
-    kind: typeof KIND_PUBLISHER;
-}
+export interface RabbitMQPublisherResource extends ResourceWithSpec<RabbitMQPublisherSpec> {}
 
-export interface RabbitMQExchangeResource extends ResourceWithSpec<RabbitMQExchangeSpec> {
-    kind: typeof KIND_EXCHANGE;
-}
+export interface RabbitMQExchangeResource extends ResourceWithSpec<RabbitMQExchangeSpec> {}
 
-export interface RabbitMQQueueResource extends ResourceWithSpec<RabbitMQQueueSpec> {
-    kind: typeof KIND_QUEUE;
-}
+export interface RabbitMQQueueResource extends ResourceWithSpec<RabbitMQQueueSpec> {}

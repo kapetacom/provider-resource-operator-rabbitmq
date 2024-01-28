@@ -5,24 +5,26 @@
 
 import React from 'react';
 
-import { FormAvatarEditorField, InfoBox } from '@kapeta/ui-web-components';
+import { InfoBox } from '@kapeta/ui-web-components';
 
 import { BlockTypeEditorProps } from '@kapeta/ui-web-types';
 
 import { RabbitMQBlockDefinition } from '../types';
+import { RabbitMQBindingEditor } from './RabbitMQBindingEditor';
 
 export const RabbitMQBlockEditorComponent = (props: BlockTypeEditorProps<RabbitMQBlockDefinition>) => {
+    if (props.creating) {
+        // No need to show the editor when creating a new block - we need resources first
+        return null;
+    }
+
     return (
         <div>
             <InfoBox>RabbitMQ Server for sending async messages between your services</InfoBox>
-            <FormAvatarEditorField
-                name={'spec.icon'}
-                label={'Icon'}
-                maxFileSize={1024 * 50}
-                help={
-                    'Select an icon for this block to make it easier to identify. Max 50 kb - and we recommend using a square SVG image.'
-                }
-                fallbackIcon={'kap-icon-block'}
+            <RabbitMQBindingEditor
+                exchanges={props.block.spec?.consumers ?? []}
+                queues={props.block.spec?.providers ?? []}
+                entities={props.block.spec?.entities?.types ?? []}
             />
         </div>
     );

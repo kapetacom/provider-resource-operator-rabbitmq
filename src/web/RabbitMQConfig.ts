@@ -5,7 +5,6 @@
 
 import { IBlockTypeProvider } from '@kapeta/ui-web-types';
 import { ICON, KIND_BLOCK, KIND_EXCHANGE, KIND_QUEUE, RabbitMQBlockDefinition } from './types';
-import { RabbitMQBlockConfigComponent } from './components/RabbitMQBlockConfigComponent';
 import { RabbitMQBlockEditorComponent } from './components/RabbitMQBlockEditorComponent';
 
 const packageJson = require('../../package.json');
@@ -16,10 +15,35 @@ const blockTypeProvider: IBlockTypeProvider<RabbitMQBlockDefinition> = {
     title: 'RabbitMQ',
     icon: ICON,
     editorComponent: RabbitMQBlockEditorComponent,
-    configComponent: RabbitMQBlockConfigComponent,
     resourceKinds: [KIND_EXCHANGE, KIND_QUEUE],
-    createDefaultConfig: (block: RabbitMQBlockDefinition) => {
-        return {};
+    validate: (block: RabbitMQBlockDefinition) => {
+        const errors: string[] = [];
+        const unboundExchanges =
+            block.spec?.consumers?.filter((consumer) => {
+                return !block.spec?.bindings?.exchanges?.some((exchange) => {
+                    return exchange.exchange === consumer.metadata.name;
+                });
+            }) ?? [];
+
+        if (unboundExchanges.length > 0) {
+            errors.push(
+                `There are ${unboundExchanges.length} unbound exchanges. All exchanges must be bound to at least 1 queue.`
+            );
+        }
+
+        const unboundQueues =
+            block.spec?.providers?.filter((provider) => {
+                return !block.spec.bindings?.exchanges?.some((exchange) => {
+                    return exchange.bindings?.some((b) => b.queue === provider.metadata.name);
+                });
+            }) ?? [];
+
+        if (unboundQueues.length > 0) {
+            errors.push(
+                `There are ${unboundQueues.length} unbound queues. All queues must be bound to at least 1 exchange.`
+            );
+        }
+        return errors;
     },
     definition: {
         kind: KIND_BLOCK,

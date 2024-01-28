@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {ICON, KIND_EXCHANGE, KIND_PUBLISHER, RabbitMQPublisherSpec} from './types';
+import { ICON, KIND_EXCHANGE, KIND_PUBLISHER, RabbitMQPublisherSpec } from './types';
 import { createValidator, renameEntityReferences, resolveEntities } from './utils';
 import { IResourceTypeProvider, ResourceRole, ResourceProviderType } from '@kapeta/ui-web-types';
 import { Metadata } from '@kapeta/schemas';

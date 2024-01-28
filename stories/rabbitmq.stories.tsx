@@ -23,7 +23,8 @@ import { RabbitMQPublisherEditor } from '../src/web/components/RabbitMQPublisher
 import { RabbitMQBindingEditor } from '../src/web/components/RabbitMQBindingEditor';
 import { RabbitMQConnectionInspector } from '../src/web/components/RabbitMQConnectionInspector';
 import { RabbitMQBlockEditorComponent } from '../src/web/components/RabbitMQBlockEditorComponent';
-import { RabbitMQBlockConfigComponent } from '../src/web/components/RabbitMQBlockConfigComponent';
+import { RabbitMQExchangeEditor } from '../src/web/components/RabbitMQExchangeEditor';
+import { RabbitMQQueueEditor } from '../src/web/components/RabbitMQQueueEditor';
 
 const mapper = ([name, property]: [string, any]): DSLDataTypeProperty => ({
     name,
@@ -31,7 +32,11 @@ const mapper = ([name, property]: [string, any]): DSLDataTypeProperty => ({
 });
 
 const toEntity = (type: DSLData, types: DSLData[]): Entity => {
-    return DSLConverters.toSchemaEntity(CONSUMER_ENTITIES[0], CONSUMER_ENTITIES as DSLDataType[]) as Entity;
+    return DSLConverters.toSchemaEntity(type, types as DSLDataType[]) as Entity;
+};
+
+const toEntities = (data: DSLData[]): Entity[] => {
+    return data.map((d) => toEntity(d, data));
 };
 
 const BLOCK: BlockDefinition = {
@@ -61,41 +66,10 @@ const BLOCK: BlockDefinition = {
         },
     },
 };
-
-const RABBIT_BLOCK: RabbitMQBlockDefinition = {
-    kind: 'kapeta/block-type-rabbitmq',
-    metadata: {
-        name: 'kapeta/test',
-    },
-    spec: {
-        entities: {
-            types: [
-                {
-                    type: EntityType.Dto,
-                    name: 'Task',
-                    properties: {
-                        id: {
-                            type: 'string',
-                        },
-                        description: {
-                            type: 'string',
-                        },
-                        state: {
-                            ref: 'TaskState',
-                        },
-                    },
-                },
-            ],
-        },
-        consumers: [],
-        publishers: [],
-    },
-};
-
-const PUBLISHER_ENTITIES: DSLData[] = [
+const PUBLISHER_ENTITIES = toEntities([
     {
         type: DSLEntityType.DATATYPE,
-        name: 'Task',
+        name: 'PublisherTask',
         properties: Object.entries({
             id: {
                 type: 'string',
@@ -125,12 +99,12 @@ const PUBLISHER_ENTITIES: DSLData[] = [
         name: 'TaskState',
         values: ['PENDING', 'DONE'],
     },
-];
+]);
 
-const CONSUMER_ENTITIES: DSLData[] = [
+const CONSUMER_ENTITIES = toEntities([
     {
         type: DSLEntityType.DATATYPE,
-        name: 'Task',
+        name: 'ConsumerTask',
         properties: Object.entries({
             id: {
                 type: 'string',
@@ -145,7 +119,7 @@ const CONSUMER_ENTITIES: DSLData[] = [
         name: 'TaskState',
         values: ['PENDING', 'DONE'],
     },
-];
+]);
 
 const RabbitMQExchangeResourceEmptyData: RabbitMQExchangeResource = {
     kind: KIND_EXCHANGE,
@@ -160,10 +134,10 @@ const RabbitMQExchangeResourceEmptyData: RabbitMQExchangeResource = {
     },
 };
 
-const RabbitMQExchangeResourceData: RabbitMQExchangeResource = {
+const RabbitMQExchangeResourceTopicData: RabbitMQExchangeResource = {
     kind: KIND_EXCHANGE,
     metadata: {
-        name: 'MyPublisher',
+        name: 'events',
     },
     spec: {
         port: {
@@ -171,16 +145,99 @@ const RabbitMQExchangeResourceData: RabbitMQExchangeResource = {
         },
         payloadType: {
             type: PUBLISHER_ENTITIES[0].name,
-            structure: toEntity(PUBLISHER_ENTITIES[0], PUBLISHER_ENTITIES),
+            structure: PUBLISHER_ENTITIES[0],
         },
         exchangeType: 'topic',
+    },
+};
+
+const RabbitMQExchangeResourceHeadersData: RabbitMQExchangeResource = {
+    kind: KIND_EXCHANGE,
+    metadata: {
+        name: 'logs',
+    },
+    spec: {
+        port: {
+            type: 'amqp',
+        },
+        payloadType: {
+            type: PUBLISHER_ENTITIES[0].name,
+            structure: PUBLISHER_ENTITIES[0],
+        },
+        exchangeType: 'headers',
+    },
+};
+
+const RabbitMQExchangeResourceDirectData: RabbitMQExchangeResource = {
+    kind: KIND_EXCHANGE,
+    metadata: {
+        name: 'commands',
+    },
+    spec: {
+        port: {
+            type: 'amqp',
+        },
+        payloadType: {
+            type: PUBLISHER_ENTITIES[0].name,
+            structure: PUBLISHER_ENTITIES[0],
+        },
+        exchangeType: 'direct',
+    },
+};
+
+const RabbitMQExchangeResourceFanoutData: RabbitMQExchangeResource = {
+    kind: KIND_EXCHANGE,
+    metadata: {
+        name: 'audit',
+    },
+    spec: {
+        port: {
+            type: 'amqp',
+        },
+        payloadType: {
+            type: PUBLISHER_ENTITIES[0].name,
+            structure: PUBLISHER_ENTITIES[0],
+        },
+        exchangeType: 'fanout',
     },
 };
 
 const RabbitMQQueueResourceData: RabbitMQQueueResource = {
     kind: KIND_QUEUE,
     metadata: {
-        name: 'MyRESTClient',
+        name: 'events',
+    },
+    spec: {
+        port: {
+            type: 'amqp',
+        },
+        payloadType: {
+            type: PUBLISHER_ENTITIES[0].name,
+            structure: PUBLISHER_ENTITIES[0],
+        },
+    },
+};
+
+const RabbitMQQueueResourceData2: RabbitMQQueueResource = {
+    kind: KIND_QUEUE,
+    metadata: {
+        name: 'logs',
+    },
+    spec: {
+        port: {
+            type: 'amqp',
+        },
+        payloadType: {
+            type: PUBLISHER_ENTITIES[0].name,
+            structure: PUBLISHER_ENTITIES[0],
+        },
+    },
+};
+
+const RabbitMQQueueResourceDataOtherType: RabbitMQQueueResource = {
+    kind: KIND_QUEUE,
+    metadata: {
+        name: 'other',
     },
     spec: {
         port: {
@@ -188,7 +245,7 @@ const RabbitMQQueueResourceData: RabbitMQQueueResource = {
         },
         payloadType: {
             type: CONSUMER_ENTITIES[0].name,
-            structure: toEntity(CONSUMER_ENTITIES[0], CONSUMER_ENTITIES),
+            structure: CONSUMER_ENTITIES[0],
         },
     },
 };
@@ -202,6 +259,133 @@ const RabbitMQSubscriberEmptyData: RabbitMQQueueResource = {
     spec: {
         port: {
             type: 'amqp',
+        },
+    },
+};
+
+const RABBIT_BLOCK: RabbitMQBlockDefinition = {
+    kind: 'kapeta/block-type-rabbitmq',
+    metadata: {
+        name: 'kapeta/test',
+    },
+    spec: {
+        entities: {
+            types: [
+                {
+                    type: EntityType.Dto,
+                    name: 'Task',
+                    properties: {
+                        id: {
+                            type: 'string',
+                        },
+                        description: {
+                            type: 'string',
+                        },
+                        state: {
+                            ref: 'TaskState',
+                        },
+                    },
+                },
+            ],
+        },
+        consumers: [
+            RabbitMQExchangeResourceTopicData,
+            RabbitMQExchangeResourceHeadersData,
+            RabbitMQExchangeResourceDirectData,
+            RabbitMQExchangeResourceFanoutData,
+        ],
+        providers: [RabbitMQQueueResourceData, RabbitMQQueueResourceData2, RabbitMQQueueResourceDataOtherType],
+    },
+};
+
+const RABBIT_BLOCK_FILLED: RabbitMQBlockDefinition = {
+    kind: 'kapeta/block-type-rabbitmq',
+    metadata: {
+        name: 'kapeta/test',
+    },
+    spec: {
+        entities: {
+            types: [
+                {
+                    type: EntityType.Dto,
+                    name: 'Task',
+                    properties: {
+                        id: {
+                            type: 'string',
+                        },
+                        description: {
+                            type: 'string',
+                        },
+                        state: {
+                            ref: 'TaskState',
+                        },
+                    },
+                },
+            ],
+        },
+        consumers: [
+            RabbitMQExchangeResourceTopicData,
+            RabbitMQExchangeResourceHeadersData,
+            RabbitMQExchangeResourceDirectData,
+            RabbitMQExchangeResourceFanoutData,
+        ],
+        providers: [RabbitMQQueueResourceData, RabbitMQQueueResourceData2, RabbitMQQueueResourceDataOtherType],
+        bindings: {
+            exchanges: [
+                {
+                    exchange: RabbitMQExchangeResourceTopicData.metadata.name,
+                    bindings: [
+                        {
+                            queue: RabbitMQQueueResourceData.metadata.name,
+                            routing: 'events',
+                        },
+                        {
+                            queue: RabbitMQQueueResourceData2.metadata.name,
+                            routing: '#',
+                        },
+                    ],
+                },
+                {
+                    exchange: RabbitMQExchangeResourceHeadersData.metadata.name,
+                    bindings: [
+                        {
+                            queue: RabbitMQQueueResourceData.metadata.name,
+                            routing: {
+                                matchAll: true,
+                                headers: {
+                                    'x-match': 'all',
+                                },
+                            },
+                        },
+                        {
+                            queue: RabbitMQQueueResourceData2.metadata.name,
+                            routing: {
+                                matchAll: false,
+                                headers: {
+                                    some: 'thing',
+                                    other: 'here',
+                                },
+                            },
+                        },
+                    ],
+                },
+                {
+                    exchange: RabbitMQExchangeResourceDirectData.metadata.name,
+                    bindings: [
+                        {
+                            queue: RabbitMQQueueResourceData2.metadata.name,
+                        },
+                    ],
+                },
+                {
+                    exchange: RabbitMQExchangeResourceFanoutData.metadata.name,
+                    bindings: [
+                        {
+                            queue: RabbitMQQueueResourceDataOtherType.metadata.name,
+                        },
+                    ],
+                },
+            ],
         },
     },
 };
@@ -294,7 +478,7 @@ export const ConsumerEditor = () => (
         style={{ padding: '10px', width: '850px', height: '500px', backgroundColor: 'white', border: '1px solid gray' }}
     >
         <FormContainer
-            initialValue={RabbitMQExchangeResourceData}
+            initialValue={RabbitMQExchangeResourceTopicData}
             onChange={(data: any) => console.log('Data changed', data)}
         >
             <RabbitMQSubscriberEditor block={BLOCK} />
@@ -307,10 +491,36 @@ export const PublisherEditor = () => (
         style={{ padding: '10px', width: '850px', height: '500px', backgroundColor: 'white', border: '1px solid gray' }}
     >
         <FormContainer
-            initialValue={RabbitMQExchangeResourceData}
+            initialValue={RabbitMQExchangeResourceTopicData}
             onChange={(data: any) => console.log('Data changed', data)}
         >
             <RabbitMQPublisherEditor block={BLOCK} />
+        </FormContainer>
+    </div>
+);
+
+export const ExchangeEditor = () => (
+    <div
+        style={{ padding: '10px', width: '850px', height: '500px', backgroundColor: 'white', border: '1px solid gray' }}
+    >
+        <FormContainer
+            initialValue={RabbitMQExchangeResourceTopicData}
+            onChange={(data: any) => console.log('Data changed', data)}
+        >
+            <RabbitMQExchangeEditor block={RABBIT_BLOCK as any as BlockDefinition} />
+        </FormContainer>
+    </div>
+);
+
+export const QueueEditor = () => (
+    <div
+        style={{ padding: '10px', width: '850px', height: '500px', backgroundColor: 'white', border: '1px solid gray' }}
+    >
+        <FormContainer
+            initialValue={RabbitMQExchangeResourceTopicData}
+            onChange={(data: any) => console.log('Data changed', data)}
+        >
+            <RabbitMQQueueEditor block={RABBIT_BLOCK as any as BlockDefinition} />
         </FormContainer>
     </div>
 );
@@ -319,8 +529,30 @@ export const BindingEditorTopic = () => (
     <div style={{ padding: '25px', width: '750px', height: '100%' }}>
         <ToastContainer />
         <RabbitMQBindingEditor
-            exchange={RabbitMQExchangeResourceData}
-            queue={RabbitMQQueueResourceData}
+            exchanges={[
+                RabbitMQExchangeResourceTopicData,
+                RabbitMQExchangeResourceHeadersData,
+                RabbitMQExchangeResourceDirectData,
+                RabbitMQExchangeResourceFanoutData,
+            ]}
+            queues={[RabbitMQQueueResourceData, RabbitMQQueueResourceData2]}
+            onDataChanged={(change) => console.log('Data changed', change)}
+            entities={PUBLISHER_ENTITIES}
+        />
+    </div>
+);
+
+export const BindingEditorTopicTypeMismatch = () => (
+    <div style={{ padding: '25px', width: '750px', height: '100%' }}>
+        <ToastContainer />
+        <RabbitMQBindingEditor
+            exchanges={[
+                RabbitMQExchangeResourceTopicData,
+                RabbitMQExchangeResourceHeadersData,
+                RabbitMQExchangeResourceDirectData,
+                RabbitMQExchangeResourceFanoutData,
+            ]}
+            queues={[RabbitMQQueueResourceDataOtherType]}
             onDataChanged={(change) => console.log('Data changed', change)}
             entities={PUBLISHER_ENTITIES}
         />
@@ -329,9 +561,9 @@ export const BindingEditorTopic = () => (
 
 export const BindingEditorDirect = () => {
     const source = {
-        ...RabbitMQExchangeResourceData,
+        ...RabbitMQExchangeResourceTopicData,
         spec: {
-            ...RabbitMQExchangeResourceData.spec,
+            ...RabbitMQExchangeResourceTopicData.spec,
             exchangeType: 'direct',
         },
     } satisfies RabbitMQExchangeResource;
@@ -340,8 +572,8 @@ export const BindingEditorDirect = () => {
         <div style={{ padding: '25px', width: '750px', height: '100%' }}>
             <ToastContainer />
             <RabbitMQBindingEditor
-                exchange={source}
-                queue={RabbitMQQueueResourceData}
+                exchanges={[source]}
+                queues={[RabbitMQQueueResourceData]}
                 onDataChanged={(change) => console.log('Data changed', change)}
                 entities={PUBLISHER_ENTITIES}
             />
@@ -351,9 +583,9 @@ export const BindingEditorDirect = () => {
 
 export const BindingEditorFanout = () => {
     const source = {
-        ...RabbitMQExchangeResourceData,
+        ...RabbitMQExchangeResourceTopicData,
         spec: {
-            ...RabbitMQExchangeResourceData.spec,
+            ...RabbitMQExchangeResourceTopicData.spec,
             exchangeType: 'fanout',
         },
     } satisfies RabbitMQExchangeResource;
@@ -362,8 +594,8 @@ export const BindingEditorFanout = () => {
         <div style={{ padding: '25px', width: '750px', height: '100%' }}>
             <ToastContainer />
             <RabbitMQBindingEditor
-                exchange={source}
-                queue={RabbitMQQueueResourceData}
+                exchanges={[source]}
+                queues={[RabbitMQQueueResourceData]}
                 onDataChanged={(change) => console.log('Data changed', change)}
                 entities={PUBLISHER_ENTITIES}
             />
@@ -373,9 +605,9 @@ export const BindingEditorFanout = () => {
 
 export const BindingEditorHeader = () => {
     const source = {
-        ...RabbitMQExchangeResourceData,
+        ...RabbitMQExchangeResourceTopicData,
         spec: {
-            ...RabbitMQExchangeResourceData.spec,
+            ...RabbitMQExchangeResourceTopicData.spec,
             exchangeType: 'headers',
         },
     } satisfies RabbitMQExchangeResource;
@@ -384,8 +616,8 @@ export const BindingEditorHeader = () => {
         <div style={{ padding: '25px', width: '750px', height: '100%' }}>
             <ToastContainer />
             <RabbitMQBindingEditor
-                exchange={source}
-                queue={RabbitMQQueueResourceData}
+                exchanges={[source]}
+                queues={[RabbitMQQueueResourceData]}
                 onDataChanged={(change) => console.log('Data changed', change)}
                 entities={PUBLISHER_ENTITIES}
             />
@@ -397,8 +629,8 @@ export const BindingEditorEmptyServerProblem = () => (
     <div style={{ padding: '25px', width: '750px', height: '100%' }}>
         <ToastContainer />
         <RabbitMQBindingEditor
-            exchange={RabbitMQExchangeResourceEmptyData}
-            queue={RabbitMQQueueResourceData}
+            exchanges={[RabbitMQExchangeResourceEmptyData]}
+            queues={[RabbitMQQueueResourceData]}
             onDataChanged={(change) => console.log('Data changed', change)}
             entities={PUBLISHER_ENTITIES}
         />
@@ -409,8 +641,8 @@ export const BindingEditorEmptyServerOK = () => (
     <div style={{ padding: '25px', width: '750px', height: '100%' }}>
         <ToastContainer />
         <RabbitMQBindingEditor
-            exchange={RabbitMQExchangeResourceEmptyData}
-            queue={RabbitMQQueueResourceData}
+            exchanges={[RabbitMQExchangeResourceEmptyData]}
+            queues={[RabbitMQQueueResourceData]}
             onDataChanged={(change) => console.log('Data changed', change)}
             entities={CONSUMER_ENTITIES}
         />
@@ -421,8 +653,8 @@ export const BindingEditorEmptyClientProblem = () => (
     <div style={{ padding: '25px', width: '750px', height: '100%' }}>
         <ToastContainer />
         <RabbitMQBindingEditor
-            exchange={RabbitMQExchangeResourceData}
-            queue={RabbitMQSubscriberEmptyData}
+            exchanges={[RabbitMQExchangeResourceTopicData]}
+            queues={[RabbitMQSubscriberEmptyData]}
             onDataChanged={(change) => console.log('Data changed', change)}
             entities={PUBLISHER_ENTITIES}
         />
@@ -432,27 +664,27 @@ export const BindingEditorEmptyClientProblem = () => (
 export const TrafficInspectorView = () => <RabbitMQConnectionInspector mapping={{}} trafficLines={trafficLines} />;
 
 export const BlockEditorView = () => {
-    return <RabbitMQBlockEditorComponent block={RABBIT_BLOCK} />;
+    return (
+        <FormContainer
+            initialValue={RABBIT_BLOCK}
+            onChange={(data) => {
+                console.log('Form data changed', data);
+            }}
+        >
+            <RabbitMQBlockEditorComponent block={RABBIT_BLOCK} />
+        </FormContainer>
+    );
 };
 
-export const BlockConfigView = () => {
+export const BlockEditorFilledView = () => {
     return (
-        <RabbitMQBlockConfigComponent
-            block={RABBIT_BLOCK}
-            instance={{
-                block: {
-                    ref: 'kapeta/test',
-                },
-                name: 'mq1',
-                id: '1',
-                dimensions: {
-                    height: 1,
-                    width: 1,
-                    top: 0,
-                    left: 0,
-                },
-                defaultConfiguration: {},
+        <FormContainer
+            initialValue={RABBIT_BLOCK_FILLED}
+            onChange={(data) => {
+                console.log('Form data changed', data);
             }}
-        />
+        >
+            <RabbitMQBlockEditorComponent block={RABBIT_BLOCK_FILLED} />
+        </FormContainer>
     );
 };

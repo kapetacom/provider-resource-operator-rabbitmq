@@ -9,7 +9,7 @@ import { ResourceTypeProviderEditorProps } from '@kapeta/ui-web-types';
 
 import { Stack } from '@mui/material';
 import { RabbitMQBaseEditor } from './RabbitMQBaseEditor';
-import {FormField, FormFieldType} from "@kapeta/ui-web-components";
+import { FormField, FormFieldType } from '@kapeta/ui-web-components';
 
 export const RabbitMQExchangeEditor = (props: ResourceTypeProviderEditorProps) => {
     return (

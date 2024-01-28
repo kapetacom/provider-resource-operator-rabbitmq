@@ -50,14 +50,13 @@ interface HeaderObjectEditorProps {
 
 export const HeaderObjectEditor = (props: HeaderObjectEditorProps) => {
     const field = useFormContextField<HeaderValue>(props.name);
-    const headerMap = field.get();
     const [headers, setHeaders] = useState<[string, string][]>([]);
 
     useEffect(() => {
-        const headerValues = Object.entries(headerMap ?? {}).filter(([key, value]) => Boolean(key));
+        const headerValues = Object.entries(field.get({})).filter(([key, value]) => Boolean(key));
         console.log('headerValues', headerValues);
         setHeaders(headerValues);
-    }, [field, headerMap]);
+    }, [field]);
 
     const headerCount = headers.length;
 
@@ -82,13 +81,13 @@ export const HeaderObjectEditor = (props: HeaderObjectEditorProps) => {
         headers.push(['', '']);
     }
 
-    const duplicateHeaderNames: string[] = [];
+    const duplicateHeaderNames = new Set<string>();
 
     return (
         <Stack direction={'column'} gap={2}>
             {headers.map(([previousName, value], ix) => {
-                const duplicate = duplicateHeaderNames.includes(previousName);
-                duplicateHeaderNames.push(previousName);
+                const duplicate = duplicateHeaderNames.has(previousName);
+                duplicateHeaderNames.add(previousName);
                 return (
                     <HeaderEditor
                         key={ix}
