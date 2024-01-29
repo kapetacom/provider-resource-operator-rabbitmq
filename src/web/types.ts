@@ -35,9 +35,26 @@ export interface RabbitMQPublisherSpec extends RabbitMQBaseSpec {}
 
 export interface RabbitMQExchangeSpec extends RabbitMQBaseSpec {
     exchangeType: 'direct' | 'fanout' | 'topic' | 'headers';
+    alternateExchange?: string;
+    internal?: boolean;
+    arguments?: any;
+    durable?: boolean;
+    autoDelete?: boolean;
+
 }
 
-export interface RabbitMQQueueSpec extends RabbitMQBaseSpec {}
+export interface RabbitMQQueueSpec extends RabbitMQBaseSpec {
+    arguments?: any;
+    deadLetterExchange?: string;
+    deadLetterRoutingKey?: string;
+    maxPriority?: number;
+    maxLength?: number;
+    messageTtl?: number;
+    expires?: number;
+    durable?: boolean;
+    exclusive?: boolean;
+    autoDelete?: boolean;
+}
 
 export interface HeaderBindings {
     matchAll: boolean;

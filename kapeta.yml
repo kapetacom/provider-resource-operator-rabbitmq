@@ -45,23 +45,6 @@ spec:
             type: string
           structure:
             $ref: /core/entity
-
-  connection:
-    schema:
-      type: object
-      properties:
-        routing:
-          oneOf:
-            - type: string
-            - type: object
-              properties:
-                headers:
-                  type: object
-                  additionalProperties:
-                    type: string
-                matchAll:
-                  type: boolean
-
 ---
 kind: core/resource-type-internal
 metadata:

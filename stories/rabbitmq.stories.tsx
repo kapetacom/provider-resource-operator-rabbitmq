@@ -488,7 +488,7 @@ export const ConsumerEditor = () => (
 
 export const PublisherEditor = () => (
     <div
-        style={{ padding: '10px', width: '850px', height: '500px', backgroundColor: 'white', border: '1px solid gray' }}
+        style={{ padding: '10px', width: '850px', border: '1px solid gray' }}
     >
         <FormContainer
             initialValue={RabbitMQExchangeResourceTopicData}
