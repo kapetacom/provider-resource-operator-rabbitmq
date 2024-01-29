@@ -11,13 +11,7 @@ import { Traffic } from '@kapeta/ui-web-types';
 import { DSLConverters, DSLData, DSLDataType, DSLDataTypeProperty, DSLEntityType } from '@kapeta/kaplang-core';
 import { BlockDefinition, Entity, EntityType } from '@kapeta/schemas';
 import { RabbitMQSubscriberEditor } from '../src/web/components/RabbitMQSubscriberEditor';
-import {
-    KIND_EXCHANGE,
-    KIND_QUEUE,
-    RabbitMQBlockDefinition,
-    RabbitMQExchangeResource,
-    RabbitMQQueueResource,
-} from '../src/web/types';
+import { KIND_EXCHANGE, KIND_QUEUE } from '../src/web/types';
 import { FormContainer, ToastContainer } from '@kapeta/ui-web-components';
 import { RabbitMQPublisherEditor } from '../src/web/components/RabbitMQPublisherEditor';
 import { RabbitMQBindingEditor } from '../src/web/components/RabbitMQBindingEditor';
@@ -25,6 +19,7 @@ import { RabbitMQConnectionInspector } from '../src/web/components/RabbitMQConne
 import { RabbitMQBlockEditorComponent } from '../src/web/components/RabbitMQBlockEditorComponent';
 import { RabbitMQExchangeEditor } from '../src/web/components/RabbitMQExchangeEditor';
 import { RabbitMQQueueEditor } from '../src/web/components/RabbitMQQueueEditor';
+import { RabbitMQBlockDefinition, RabbitMQExchangeResource, RabbitMQQueueResource } from '@kapeta/sdk-rabbitmq';
 
 const mapper = ([name, property]: [string, any]): DSLDataTypeProperty => ({
     name,
@@ -487,9 +482,7 @@ export const ConsumerEditor = () => (
 );
 
 export const PublisherEditor = () => (
-    <div
-        style={{ padding: '10px', width: '850px', border: '1px solid gray' }}
-    >
+    <div style={{ padding: '10px', width: '850px', border: '1px solid gray' }}>
         <FormContainer
             initialValue={RabbitMQExchangeResourceTopicData}
             onChange={(data: any) => console.log('Data changed', data)}

@@ -4,14 +4,9 @@
  */
 
 import _, { cloneDeep } from 'lodash';
-import {
-    KIND_SUBSCRIBER,
-    RabbitMQBaseSpec,
-    RabbitMQSubscriberResource,
-    RabbitMQPublisherResource,
-    KIND_QUEUE,
-    ICON,
-} from './types';
+import { KIND_SUBSCRIBER, KIND_QUEUE, ICON } from './types';
+
+import { RabbitMQBaseSpec, RabbitMQSubscriberResource, RabbitMQPublisherResource } from '@kapeta/sdk-rabbitmq';
 
 import { IResourceTypeProvider, ResourceProviderType, ResourceRole, ResourceWithSpec } from '@kapeta/ui-web-types';
 

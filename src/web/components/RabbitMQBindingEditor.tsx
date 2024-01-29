@@ -4,13 +4,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-    QueueRouting,
-    RabbitMQBindingsSchema,
-    RabbitMQExchangeResource,
-    RabbitMQExchangeSpec,
-    RabbitMQQueueResource,
-} from '../types';
+import {} from '../types';
 import { alpha, Box, IconButton, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { grey, red } from '@mui/material/colors';
 import { ArrowRight, Clear } from '@mui/icons-material';
@@ -19,6 +13,14 @@ import { validateRoutingKey } from '../utils';
 import { HeaderObjectEditor } from './HeaderEditor';
 import _ from 'lodash';
 import { Entity } from '@kapeta/schemas';
+
+import {
+    QueueRouting,
+    RabbitMQBindingsSchema,
+    RabbitMQExchangeResource,
+    RabbitMQExchangeSpec,
+    RabbitMQQueueResource,
+} from '@kapeta/sdk-rabbitmq';
 
 type RoutingEditorProps = {
     name: string;

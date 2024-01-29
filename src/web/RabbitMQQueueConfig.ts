@@ -3,12 +3,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { KIND_SUBSCRIBER, RabbitMQPublisherSpec, KIND_QUEUE, ICON } from './types';
+import { KIND_SUBSCRIBER, KIND_QUEUE, ICON } from './types';
 import { createValidator, renameEntityReferences, resolveEntities } from './utils';
 import { IResourceTypeProvider, ResourceRole, ResourceProviderType } from '@kapeta/ui-web-types';
 import { Metadata } from '@kapeta/schemas';
 import { DSLData } from '@kapeta/kaplang-core';
 import { RabbitMQQueueEditor } from './components/RabbitMQQueueEditor';
+
+import { RabbitMQPublisherSpec } from '@kapeta/sdk-rabbitmq';
 
 const packageJson: any = require('../../package.json');
 

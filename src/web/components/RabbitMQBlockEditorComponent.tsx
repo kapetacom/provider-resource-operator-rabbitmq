@@ -9,8 +9,10 @@ import { InfoBox } from '@kapeta/ui-web-components';
 
 import { BlockTypeEditorProps } from '@kapeta/ui-web-types';
 
-import { RabbitMQBlockDefinition } from '../types';
+import {} from '../types';
 import { RabbitMQBindingEditor } from './RabbitMQBindingEditor';
+
+import { RabbitMQBlockDefinition } from '@kapeta/sdk-rabbitmq';
 
 export const RabbitMQBlockEditorComponent = (props: BlockTypeEditorProps<RabbitMQBlockDefinition>) => {
     if (props.creating) {

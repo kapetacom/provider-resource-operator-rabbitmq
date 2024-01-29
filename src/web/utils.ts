@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { RabbitMQBaseSpec, RabbitMQExchangeSpec } from './types';
 import { ResourceWithSpec } from '@kapeta/ui-web-types';
+
+import { RabbitMQBaseSpec, RabbitMQExchangeSpec } from '@kapeta/sdk-rabbitmq';
 
 export function validateName(fieldName: string, name: string) {
     if (!name) {
