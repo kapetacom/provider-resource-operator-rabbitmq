@@ -15,7 +15,7 @@ import _ from 'lodash';
 import { Entity } from '@kapeta/schemas';
 
 import {
-    QueueRouting,
+    ExchangeRouting,
     RabbitMQBindingsSchema,
     RabbitMQExchangeResource,
     RabbitMQExchangeSpec,
@@ -27,7 +27,7 @@ type RoutingEditorProps = {
     exchange: RabbitMQExchangeResource;
 };
 
-function createDefaultRouter(exchangeType: RabbitMQExchangeSpec['exchangeType']): QueueRouting {
+function createDefaultRouter(exchangeType: RabbitMQExchangeSpec['exchangeType']): ExchangeRouting {
     if (exchangeType === 'topic') {
         return '#';
     }
@@ -90,14 +90,21 @@ const RoutingEditor = (props: RoutingEditorProps) => {
     return <></>;
 };
 
-interface QueueBinding {
-    queue: RabbitMQQueueResource;
-    routing?: QueueRouting;
-}
+type ExchangeBinding =
+    | {
+          data: RabbitMQQueueResource;
+          type: 'queue';
+          routing?: ExchangeRouting;
+      }
+    | {
+          data: RabbitMQExchangeResource;
+          type: 'exchange';
+          routing?: ExchangeRouting;
+      };
 
 interface ExchangeBindings {
     exchange: RabbitMQExchangeResource;
-    bindings: QueueBinding[];
+    bindings: ExchangeBinding[];
 }
 
 interface BindingsData {
@@ -118,7 +125,8 @@ const toSchema = (data: BindingsData): RabbitMQBindingsSchema => {
                 exchange: exchange.exchange.metadata.name,
                 bindings: exchange.bindings.map((binding) => {
                     return {
-                        queue: binding.queue.metadata.name,
+                        name: binding.data.metadata.name,
+                        type: binding.type,
                         routing: binding.routing,
                     };
                 }),
@@ -144,16 +152,29 @@ const fromSchema = (
                     const bindings =
                         (exchangeSchema.bindings
                             ?.map((bindingSchema) => {
-                                const queue = queues.find((q) => q.metadata.name === bindingSchema.queue);
+                                if (bindingSchema.type === 'exchange') {
+                                    const exchange = exchanges.find((e) => e.metadata.name === bindingSchema.name);
+                                    if (!exchange) {
+                                        return undefined;
+                                    }
+                                    return {
+                                        data: exchange,
+                                        type: 'exchange',
+                                        routing: bindingSchema.routing,
+                                    } satisfies ExchangeBinding;
+                                }
+
+                                const queue = queues.find((q) => q.metadata.name === bindingSchema.name);
                                 if (!queue) {
                                     return undefined;
                                 }
                                 return {
-                                    queue,
+                                    data: queue,
+                                    type: 'queue',
                                     routing: bindingSchema.routing,
-                                } satisfies QueueBinding;
+                                } satisfies ExchangeBinding;
                             })
-                            .filter(Boolean) as QueueBinding[]) ?? [];
+                            .filter(Boolean) as ExchangeBinding[]) ?? [];
 
                     return {
                         exchange,
@@ -211,7 +232,7 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
             return exchange.bindings.some((binding) => {
                 return !EntityHelpers.isEntityCompatible(
                     exchange.exchange.spec.payloadType.structure,
-                    binding.queue.spec.payloadType.structure,
+                    binding.data.spec.payloadType.structure,
                     props.entities,
                     props.entities
                 );
@@ -227,19 +248,37 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
 
     return (
         <Stack className={'rabbitmq-binding-editor'} gap={1}>
-            {data.exchanges.map((binding, exchangeIx) => {
+            {data.exchanges.map((bindings, exchangeIx) => {
                 const matchingQueues = props.queues.filter((queue) => {
                     return EntityHelpers.isEntityCompatible(
-                        binding.exchange.spec.payloadType.structure,
+                        bindings.exchange.spec.payloadType.structure,
                         queue.spec.payloadType.structure,
                         props.entities,
                         props.entities
                     );
                 });
 
+                const matchingExchanges = props.exchanges.filter((exchange) => {
+                    return (
+                        bindings.exchange.metadata.name !== exchange.metadata.name &&
+                        EntityHelpers.isEntityCompatible(
+                            bindings.exchange.spec.payloadType.structure,
+                            exchange.spec.payloadType.structure,
+                            props.entities,
+                            props.entities
+                        )
+                    );
+                });
+
                 const unboundQueues = matchingQueues.filter((queue) => {
-                    return !binding.bindings.some((b) => {
-                        return b.queue.metadata.name === queue.metadata.name;
+                    return !bindings.bindings.some((b) => {
+                        return b.type === 'queue' && b.data.metadata.name === queue.metadata.name;
+                    });
+                });
+
+                const unboundExchanges = matchingExchanges.filter((exchange) => {
+                    return !bindings.bindings.some((b) => {
+                        return b.type === 'exchange' && b.data.metadata.name === exchange.metadata.name;
                     });
                 });
                 return (
@@ -260,29 +299,31 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                 maxWidth: '200px',
                             }}
                         >
-                            <h3>Exchange: {binding.exchange.metadata.name}</h3>
+                            <h3>Exchange: {bindings.exchange.metadata.name}</h3>
                             <p>
-                                Type: <b>{binding.exchange.spec.exchangeType}</b>
+                                Type: <b>{bindings.exchange.spec.exchangeType}</b>
                             </p>
                             <Typography color={grey[700]} fontSize={'12px'} py={1}>
-                                <RoutingInfo exchange={binding.exchange} />
+                                <RoutingInfo exchange={bindings.exchange} />
                             </Typography>
                         </Box>
                         <Stack direction={'column'} flex={1} gap={2} mb={2} minWidth={'150px'} mt={1.5}>
-                            {matchingQueues.length === 0 && (
+                            {matchingQueues.length === 0 && matchingExchanges.length === 0 && (
                                 <Typography color={grey[700]} fontSize={'12px'} py={1} lineHeight={2}>
-                                    No queue data types are compatible with this exchange.
+                                    No queue or exchange data types are compatible with this exchange.
                                     <br />
-                                    Exchange type: <b>{binding.exchange.spec.payloadType.type}</b>
+                                    Exchange type: <b>{bindings.exchange.spec.payloadType.type}</b>
                                 </Typography>
                             )}
-                            {binding.bindings.map((queueBinding, bindingIx) => {
+                            {bindings.bindings.map((binding, bindingIx) => {
                                 const compatible = EntityHelpers.isEntityCompatible(
-                                    binding.exchange.spec.payloadType.structure,
-                                    queueBinding.queue.spec.payloadType.structure,
+                                    bindings.exchange.spec.payloadType.structure,
+                                    binding.data.spec.payloadType.structure,
                                     props.entities,
                                     props.entities
                                 );
+
+                                const typeName = binding.type === 'exchange' ? 'Exchange' : 'Queue';
 
                                 return (
                                     <Stack
@@ -301,7 +342,9 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                             <ArrowRight />
                                         </Box>
                                         <Box flex={1}>
-                                            <Typography mt={1}>Queue: {queueBinding.queue.metadata.name}</Typography>
+                                            <Typography mt={1}>
+                                                {typeName}: {binding.data.metadata.name}
+                                            </Typography>
                                             {!compatible && (
                                                 <Typography
                                                     sx={{
@@ -309,13 +352,13 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                                         fontSize: '12px',
                                                     }}
                                                 >
-                                                    Queue data type not compatible :{' '}
-                                                    <b>{queueBinding.queue.spec.payloadType.type}</b>
+                                                    {typeName} data type not compatible :{' '}
+                                                    <b>{binding.data.spec.payloadType.type}</b>
                                                 </Typography>
                                             )}
                                             <RoutingEditor
                                                 name={`spec.bindings.exchanges[${exchangeIx}].bindings[${bindingIx}]`}
-                                                exchange={binding.exchange}
+                                                exchange={bindings.exchange}
                                             />
                                         </Box>
                                         <Box mt={0.5}>
@@ -325,8 +368,7 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                                     const copy = { ...data };
                                                     const exchange = copy.exchanges[exchangeIx];
                                                     exchange.bindings = exchange.bindings.filter(
-                                                        (b) =>
-                                                            b.queue.metadata.name !== queueBinding.queue.metadata.name
+                                                        (b) => b.data.metadata.name !== binding.data.metadata.name
                                                     );
                                                     onDataChanged(copy);
                                                 }}
@@ -347,7 +389,7 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                 );
                             })}
 
-                            {unboundQueues.length > 0 && (
+                            {(unboundQueues.length > 0 || unboundExchanges.length > 0) && (
                                 <Stack direction={'row'} gap={1}>
                                     <Box mt={1} ml={2}>
                                         <ArrowRight />
@@ -359,18 +401,46 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                             value={''}
                                             displayEmpty={true}
                                             onChange={(event) => {
-                                                const queueName = event.target.value as string;
-                                                if (!queueName) {
+                                                const target = event.target.value as string;
+                                                if (!target) {
                                                     return;
                                                 }
-                                                const queue = props.queues.find((q) => q.metadata.name === queueName);
-                                                if (queue) {
+                                                const [type, targetName] = target.split(':');
+
+                                                if (type === 'queue') {
+                                                    const queue = props.queues.find(
+                                                        (q) => q.metadata.name === targetName
+                                                    );
+                                                    if (!queue) {
+                                                        return;
+                                                    }
+
                                                     const copy = { ...data };
                                                     const exchange = copy.exchanges[exchangeIx];
                                                     exchange.bindings.push({
-                                                        queue,
+                                                        data: queue,
+                                                        type: 'queue',
                                                         routing: createDefaultRouter(
                                                             exchange.exchange.spec.exchangeType
+                                                        ),
+                                                    });
+                                                    onDataChanged(copy);
+                                                }
+
+                                                if (type === 'exchange') {
+                                                    const exchange = props.exchanges.find(
+                                                        (e) => e.metadata.name === targetName
+                                                    );
+                                                    if (!exchange) {
+                                                        return;
+                                                    }
+                                                    const copy = { ...data };
+                                                    const currentExchange = copy.exchanges[exchangeIx];
+                                                    currentExchange.bindings.push({
+                                                        data: exchange,
+                                                        type: 'exchange',
+                                                        routing: createDefaultRouter(
+                                                            currentExchange.exchange.spec.exchangeType
                                                         ),
                                                     });
                                                     onDataChanged(copy);
@@ -380,8 +450,15 @@ export const RabbitMQBindingEditor = (props: RabbitMQBindingEditorProps) => {
                                             <MenuItem value={''}>Actions...</MenuItem>
                                             {unboundQueues.map((queue) => {
                                                 return (
-                                                    <MenuItem value={queue.metadata.name}>
+                                                    <MenuItem value={'queue:' + queue.metadata.name}>
                                                         Add binding for queue:&nbsp;<b>{queue.metadata.name}</b>
+                                                    </MenuItem>
+                                                );
+                                            })}
+                                            {unboundExchanges.map((exchange) => {
+                                                return (
+                                                    <MenuItem value={'exchange:' + exchange.metadata.name}>
+                                                        Add binding for exchange:&nbsp;<b>{exchange.metadata.name}</b>
                                                     </MenuItem>
                                                 );
                                             })}

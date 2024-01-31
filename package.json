@@ -88,9 +88,10 @@
         "typescript": "5.3.3",
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4",
-        "yaml-loader": "^0.8.0"
+        "yaml-loader": "^0.8.0",
+        "@kapeta/sdk-rabbitmq": "../sdk-nodejs-rabbitmq"
     },
     "bundledDependencies": true,
-    "bundleDependencies": true,
+    "bundleDependencies": [],
     "prettier": "@kapeta/prettier-config"
 }

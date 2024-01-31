@@ -21,7 +21,7 @@ export const RabbitMQQueueEditor = (props: ResourceTypeProviderEditorProps) => {
             <RabbitMQBaseEditor {...props} />
 
             <FormField
-                label="Durable?"
+                label="Durable"
                 type={FormFieldType.CHECKBOX}
                 disabled={exclusiveField.get(false) || autoDeleteField.get(false)}
                 name={'spec.durable'}
@@ -29,7 +29,7 @@ export const RabbitMQQueueEditor = (props: ResourceTypeProviderEditorProps) => {
             />
 
             <FormField
-                label="Exclusive?"
+                label="Exclusive"
                 disabled={durableField.get(false) || autoDeleteField.get(false)}
                 type={FormFieldType.CHECKBOX}
                 name={'spec.exclusive'}
@@ -37,12 +37,13 @@ export const RabbitMQQueueEditor = (props: ResourceTypeProviderEditorProps) => {
             />
 
             <FormField
-                label="Auto-Delete?"
+                label="Auto-Delete"
                 type={FormFieldType.CHECKBOX}
                 disabled={durableField.get(false) || exclusiveField.get(false)}
                 name={'spec.autoDelete'}
-                help={'If true, the queue is deleted when all consumers have finished using it.'}
+                help={'If true, the queue is deleted when all consumers are disconnected.'}
             />
+
         </Stack>
     );
 };

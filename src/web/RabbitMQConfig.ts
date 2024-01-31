@@ -7,7 +7,7 @@ import { IBlockTypeProvider } from '@kapeta/ui-web-types';
 import { ICON, KIND_BLOCK, KIND_EXCHANGE, KIND_QUEUE } from './types';
 import { RabbitMQBlockEditorComponent } from './components/RabbitMQBlockEditorComponent';
 import { EntityHelpers } from '@kapeta/ui-web-components';
-import { RabbitMQBlockDefinition } from '@kapeta/sdk-rabbitmq';
+import { RabbitMQBlockDefinition, RabbitMQExchangeResource, RabbitMQQueueResource } from '@kapeta/sdk-rabbitmq';
 
 const packageJson = require('../../package.json');
 
@@ -24,16 +24,22 @@ const blockTypeProvider: IBlockTypeProvider<RabbitMQBlockDefinition> = {
         const hasInvalidBindings =
             block.spec?.bindings?.exchanges?.some((exchangeBinding) => {
                 return exchangeBinding.bindings?.some((binding) => {
-                    const queue = block.spec.providers?.find((provider) => provider.metadata.name === binding.queue);
+                    let data: RabbitMQExchangeResource | RabbitMQQueueResource | undefined;
+                    if (binding.type === 'exchange') {
+                        data = block.spec.consumers?.find((consumer) => consumer.metadata.name === binding.name);
+                    } else {
+                        data = block.spec.providers?.find((provider) => provider.metadata.name === binding.name);
+                    }
+
                     const exchange = block.spec.consumers?.find(
                         (consumer) => consumer.metadata.name === exchangeBinding.exchange
                     );
-                    if (!queue?.spec?.payloadType?.structure || !exchange?.spec?.payloadType?.structure) {
+                    if (!data?.spec?.payloadType?.structure || !exchange?.spec?.payloadType?.structure) {
                         return true;
                     }
 
                     return !EntityHelpers.isEntityCompatible(
-                        queue.spec.payloadType.structure,
+                        data.spec.payloadType.structure,
                         exchange.spec.payloadType.structure,
                         block.spec.entities?.types ?? [],
                         block.spec.entities?.types ?? []
@@ -56,14 +62,14 @@ const blockTypeProvider: IBlockTypeProvider<RabbitMQBlockDefinition> = {
 
         if (unboundExchanges.length > 0) {
             errors.push(
-                `There are ${unboundExchanges.length} unbound exchanges. All exchanges must be bound to at least 1 queue.`
+                `There are ${unboundExchanges.length} unbound exchanges. All exchanges must be bound to at least 1 queue or exchange.`
             );
         }
 
         const unboundQueues =
             block.spec?.providers?.filter((provider) => {
                 return !block.spec.bindings?.exchanges?.some((exchange) => {
-                    return exchange.bindings?.some((b) => b.queue === provider.metadata.name);
+                    return exchange.bindings?.some((b) => b.type === 'queue' && b.name === provider.metadata.name);
                 });
             }) ?? [];
 

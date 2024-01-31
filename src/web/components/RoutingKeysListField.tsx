@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TextAreaWithLines } from './TextAreaWithLines';
 import { grey } from '@mui/material/colors';
+import { useFormContextField } from '@kapeta/ui-web-components';
 
 function validateRouteKeys(name: string, value: string) {
     const keys: string[] = [];
@@ -20,6 +21,8 @@ function validateRouteKeys(name: string, value: string) {
         }
         keys.push(key);
     });
+
+    return keys;
 }
 
 interface Props {
@@ -27,9 +30,22 @@ interface Props {
 }
 
 export const RoutingKeysListField = (props: Props) => {
+    const dataField = useFormContextField<string[]>(props.name + '.data');
+    const textField = useFormContextField<string>(props.name + '.text');
+    const textValue = textField.get();
+
+    useEffect(() => {
+        try {
+            const keys = validateRouteKeys(props.name, textValue);
+            dataField.set(keys);
+        } catch (e) {
+            dataField.set([]);
+        }
+    }, [textValue, dataField, props.name]);
+
     return (
         <>
-            <TextAreaWithLines label={'Keys'} name={props.name} validation={[validateRouteKeys]} />
+            <TextAreaWithLines label={'Keys'} name={props.name + '.text'} validation={[validateRouteKeys]} />
             <pre
                 style={{
                     color: grey[600],

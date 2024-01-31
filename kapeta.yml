@@ -40,11 +40,49 @@ spec:
 
       payloadType:
         type: object
+        required:
+          - type
+          - structure
         properties:
           type:
             type: string
           structure:
             $ref: /core/entity
+
+      routeKeys:
+        type: object
+        required:
+          - text
+          - data
+        properties:
+          text:
+            type: string
+          data:
+            type: array
+            items:
+              type: string
+      headers:
+        type: object
+        required:
+          - text
+          - data
+        properties:
+            text:
+              type: string
+            data:
+              type: array
+              items:
+                type: object
+                required:
+                - name
+                - values
+                properties:
+                  name:
+                    type: string
+                  values:
+                    type: array
+                    items:
+                      type: string
 ---
 kind: core/resource-type-internal
 metadata:
@@ -84,6 +122,9 @@ spec:
         $ref: /core/port
       payloadType:
         type: object
+        required:
+          - type
+          - structure
         properties:
           type:
             type: string
@@ -134,8 +175,15 @@ spec:
           - fanout
           - topic
           - headers
+      durable:
+        type: boolean
+      autoDelete:
+        type: boolean
       payloadType:
         type: object
+        required:
+          - type
+          - structure
         properties:
           type:
             type: string
@@ -185,12 +233,11 @@ spec:
         type: boolean
       autoDelete:
         type: boolean
-      ttl:
-        type: integer
-      queueSizeLimit:
-        type: integer
       payloadType:
         type: object
+        required:
+          - type
+          - structure
         properties:
           type:
             type: string
@@ -212,20 +259,6 @@ spec:
       type: Consumers
     - path: spec.providers.kind
       type: Providers
-  configuration:
-    schema:
-      type: object
-      required:
-        - domain
-        - paths
-      properties:
-        exchangeType:
-          type: string
-          enum:
-            - direct
-            - fanout
-            - topic
-            - headers
   schema:
     type: object
     properties:
@@ -237,36 +270,62 @@ spec:
         $ref: /core/block-resource-list
       bindings:
         type: object
+        required:
+        - exchanges
         properties:
           exchanges:
             type: array
             items:
               type: object
+              required:
+                - exchange
+                - bindings
               properties:
                 exchange:
                   type: string
-                queue:
-                  type: string
-                routing:
-                  oneOf:
-                    - type: string
-                    - type: object
-                      properties:
-                        headers:
-                          type: object
-                          additionalProperties:
-                            type: string
-                        matchAll:
-                          type: boolean
+                bindings:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - type
+                      - routing
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - queue
+                          - exchange
+                      name:
+                        type: string
+                      routing:
+                        oneOf:
+                          - type: string
+                          - type: object
+                            properties:
+                              headers:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                              matchAll:
+                                type: boolean
   local:
     image: rabbitmq:3.12.12-management-alpine
     ports:
-      management:
-        port: 15672
-        type: tcp
       amqp:
         port: 5672
         type: tcp
+      management:
+        port: 15672
+        type: tcp
+    mounts:
+      data: /var/lib/rabbitmq
+    credentials:
+      username: root
+      password: root
+    options:
+      vhost: vhost
     env:
       RABBITMQ_DEFAULT_USER: root
       RABBITMQ_DEFAULT_PASS: root
