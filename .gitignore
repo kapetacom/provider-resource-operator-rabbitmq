@@ -1,0 +1,8 @@
+web/*
+dist/*
+node_modules/*
+.DS_Store
+coverage
+.npmrc
+*.tgz
+.vscode/*
