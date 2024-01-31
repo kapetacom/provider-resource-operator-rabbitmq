@@ -1,3 +1,7 @@
+/**
+ * Copyright 2023 Kapeta Inc.
+ * SPDX-License-Identifier: MIT
+ */
 import { FormField, FormFieldProps, FormFieldType, useFormContextField } from '@kapeta/ui-web-components';
 import { Box } from '@mui/material';
 import { grey } from '@mui/material/colors';

@@ -1,3 +1,7 @@
+/**
+ * Copyright 2023 Kapeta Inc.
+ * SPDX-License-Identifier: MIT
+ */
 import { FormField, FormFieldType } from '@kapeta/ui-web-components';
 import { Alert, Link } from '@mui/material';
 import React, { useState } from 'react';

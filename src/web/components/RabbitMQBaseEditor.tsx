@@ -1,3 +1,7 @@
+/**
+ * Copyright 2023 Kapeta Inc.
+ * SPDX-License-Identifier: MIT
+ */
 import React, { useEffect, useMemo } from 'react';
 import { FormField, FormFieldType, useFormContextField } from '@kapeta/ui-web-components';
 import { Entity } from '@kapeta/schemas';

@@ -1,3 +1,7 @@
+/**
+ * Copyright 2023 Kapeta Inc.
+ * SPDX-License-Identifier: MIT
+ */
 import React, { useEffect } from 'react';
 import { TextAreaWithLines } from './TextAreaWithLines';
 import { grey } from '@mui/material/colors';

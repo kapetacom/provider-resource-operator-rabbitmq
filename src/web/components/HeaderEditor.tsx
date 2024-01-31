@@ -1,3 +1,7 @@
+/**
+ * Copyright 2023 Kapeta Inc.
+ * SPDX-License-Identifier: MIT
+ */
 import { Stack, TextField } from '@mui/material';
 import { validateHeaderName } from '../utils';
 import { useFormContextField } from '@kapeta/ui-web-components';
