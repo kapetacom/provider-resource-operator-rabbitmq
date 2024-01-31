@@ -89,7 +89,7 @@
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4",
         "yaml-loader": "^0.8.0",
-        "@kapeta/sdk-rabbitmq": "../sdk-nodejs-rabbitmq"
+        "@kapeta/sdk-rabbitmq": "^1"
     },
     "bundledDependencies": true,
     "bundleDependencies": [],

@@ -331,11 +331,13 @@ const RABBIT_BLOCK_FILLED: RabbitMQBlockDefinition = {
                     exchange: RabbitMQExchangeResourceTopicData.metadata.name,
                     bindings: [
                         {
-                            queue: RabbitMQQueueResourceData.metadata.name,
+                            type: 'queue',
+                            name: RabbitMQQueueResourceData.metadata.name,
                             routing: 'events',
                         },
                         {
-                            queue: RabbitMQQueueResourceData2.metadata.name,
+                            type: 'queue',
+                            name: RabbitMQQueueResourceData2.metadata.name,
                             routing: '#',
                         },
                     ],
@@ -344,7 +346,8 @@ const RABBIT_BLOCK_FILLED: RabbitMQBlockDefinition = {
                     exchange: RabbitMQExchangeResourceHeadersData.metadata.name,
                     bindings: [
                         {
-                            queue: RabbitMQQueueResourceData.metadata.name,
+                            type: 'queue',
+                            name: RabbitMQQueueResourceData.metadata.name,
                             routing: {
                                 matchAll: true,
                                 headers: {
@@ -353,7 +356,8 @@ const RABBIT_BLOCK_FILLED: RabbitMQBlockDefinition = {
                             },
                         },
                         {
-                            queue: RabbitMQQueueResourceData2.metadata.name,
+                            type: 'queue',
+                            name: RabbitMQQueueResourceData2.metadata.name,
                             routing: {
                                 matchAll: false,
                                 headers: {
@@ -368,7 +372,8 @@ const RABBIT_BLOCK_FILLED: RabbitMQBlockDefinition = {
                     exchange: RabbitMQExchangeResourceDirectData.metadata.name,
                     bindings: [
                         {
-                            queue: RabbitMQQueueResourceData2.metadata.name,
+                            type: 'queue',
+                            name: RabbitMQQueueResourceData2.metadata.name,
                         },
                     ],
                 },
@@ -376,7 +381,8 @@ const RABBIT_BLOCK_FILLED: RabbitMQBlockDefinition = {
                     exchange: RabbitMQExchangeResourceFanoutData.metadata.name,
                     bindings: [
                         {
-                            queue: RabbitMQQueueResourceDataOtherType.metadata.name,
+                            type: 'queue',
+                            name: RabbitMQQueueResourceDataOtherType.metadata.name,
                         },
                     ],
                 },
