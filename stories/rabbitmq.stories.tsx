@@ -15,7 +15,6 @@ import { KIND_EXCHANGE, KIND_QUEUE } from '../src/web/types';
 import { FormContainer, ToastContainer } from '@kapeta/ui-web-components';
 import { RabbitMQPublisherEditor } from '../src/web/components/RabbitMQPublisherEditor';
 import { RabbitMQBindingEditor } from '../src/web/components/RabbitMQBindingEditor';
-import { RabbitMQConnectionInspector } from '../src/web/components/RabbitMQConnectionInspector';
 import { RabbitMQBlockEditorComponent } from '../src/web/components/RabbitMQBlockEditorComponent';
 import { RabbitMQExchangeEditor } from '../src/web/components/RabbitMQExchangeEditor';
 import { RabbitMQQueueEditor } from '../src/web/components/RabbitMQQueueEditor';
@@ -659,8 +658,6 @@ export const BindingEditorEmptyClientProblem = () => (
         />
     </div>
 );
-
-export const TrafficInspectorView = () => <RabbitMQConnectionInspector mapping={{}} trafficLines={trafficLines} />;
 
 export const BlockEditorView = () => {
     return (

@@ -9,7 +9,6 @@ import { IResourceTypeProvider, ResourceProviderType, ResourceRole, ResourceWith
 import { EntityType, Metadata } from '@kapeta/schemas';
 import { DSLData } from '@kapeta/kaplang-core';
 import { RabbitMQExchangeEditor } from './components/RabbitMQExchangeEditor';
-import { RabbitMQConnectionInspector } from './components/RabbitMQConnectionInspector';
 import { cloneDeep } from 'lodash';
 
 import { RabbitMQBaseSpec, RabbitMQExchangeResource, RabbitMQPublisherResource } from '@kapeta/sdk-rabbitmq';
@@ -30,7 +29,6 @@ export const RabbitMQExchangeConfig: IResourceTypeProvider<Metadata, RabbitMQBas
     converters: [
         {
             fromKind: KIND_PUBLISHER,
-            inspectComponentType: RabbitMQConnectionInspector,
             createFrom: (data: ResourceWithSpec<RabbitMQBaseSpec>): ResourceWithSpec<RabbitMQBaseSpec> => {
                 const publisherResource = data as RabbitMQPublisherResource;
                 if (!publisherResource.kind || !publisherResource.kind?.startsWith(KIND_EXCHANGE)) {

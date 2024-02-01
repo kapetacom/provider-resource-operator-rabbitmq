@@ -13,7 +13,6 @@ import { IResourceTypeProvider, ResourceProviderType, ResourceRole, ResourceWith
 import { EntityType, Metadata } from '@kapeta/schemas';
 import { createValidator, renameEntityReferences, resolveEntities } from './utils';
 import { RabbitMQSubscriberEditor } from './components/RabbitMQSubscriberEditor';
-import { RabbitMQConnectionInspector } from './components/RabbitMQConnectionInspector';
 import { DSLData } from '@kapeta/kaplang-core';
 
 const packageJson: any = require('../../package.json');
@@ -29,7 +28,6 @@ const RabbitMQSubscriberConfig: IResourceTypeProvider<Metadata, RabbitMQBaseSpec
     converters: [
         {
             fromKind: KIND_QUEUE,
-            inspectComponentType: RabbitMQConnectionInspector,
             createFrom: (data: ResourceWithSpec<RabbitMQBaseSpec>): ResourceWithSpec<RabbitMQBaseSpec> => {
                 const queueResource = data as RabbitMQPublisherResource;
                 if (!queueResource.kind || !queueResource.kind?.startsWith(KIND_SUBSCRIBER)) {
