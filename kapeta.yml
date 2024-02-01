@@ -319,6 +319,9 @@ spec:
       management:
         port: 15672
         type: tcp
+    health:
+      cmd: rabbitmqctl status
+      interval: 5000
     mounts:
       data: /var/lib/rabbitmq
     credentials:
