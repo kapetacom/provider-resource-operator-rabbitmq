@@ -43,7 +43,6 @@ export const RabbitMQQueueEditor = (props: ResourceTypeProviderEditorProps) => {
                 name={'spec.autoDelete'}
                 help={'If true, the queue is deleted when all consumers are disconnected.'}
             />
-
         </Stack>
     );
 };

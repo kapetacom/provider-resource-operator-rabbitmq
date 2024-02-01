@@ -67,22 +67,22 @@ spec:
           - text
           - data
         properties:
-            text:
-              type: string
-            data:
-              type: array
-              items:
-                type: object
-                required:
+          text:
+            type: string
+          data:
+            type: array
+            items:
+              type: object
+              required:
                 - name
                 - values
-                properties:
-                  name:
+              properties:
+                name:
+                  type: string
+                values:
+                  type: array
+                  items:
                     type: string
-                  values:
-                    type: array
-                    items:
-                      type: string
 ---
 kind: core/resource-type-internal
 metadata:
@@ -271,7 +271,7 @@ spec:
       bindings:
         type: object
         required:
-        - exchanges
+          - exchanges
         properties:
           exchanges:
             type: array

@@ -6,7 +6,6 @@
 import '@kapeta/ui-web-components/styles/index.less';
 
 import React from 'react';
-import { Traffic } from '@kapeta/ui-web-types';
 
 import { DSLConverters, DSLData, DSLDataType, DSLDataTypeProperty, DSLEntityType } from '@kapeta/kaplang-core';
 import { BlockDefinition, Entity, EntityType } from '@kapeta/schemas';
