@@ -327,9 +327,6 @@ spec:
     credentials:
       username: root
       password: root
-    options:
-      vhost: vhost
     env:
       RABBITMQ_DEFAULT_USER: root
       RABBITMQ_DEFAULT_PASS: root
-      RABBITMQ_DEFAULT_VHOST: vhost
