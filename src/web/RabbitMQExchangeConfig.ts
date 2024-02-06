@@ -83,6 +83,7 @@ export const RabbitMQExchangeConfig: IResourceTypeProvider<Metadata, RabbitMQBas
     },
     capabilities: {
         directDSL: true,
+        allowMultipleConnections: true,
     },
 };
 
