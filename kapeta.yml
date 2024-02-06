@@ -312,6 +312,7 @@ spec:
                                 type: boolean
   local:
     image: rabbitmq:3.12.12-management-alpine
+    singleton: true
     ports:
       amqp:
         port: 5672
