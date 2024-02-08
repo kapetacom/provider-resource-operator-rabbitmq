@@ -251,6 +251,10 @@ metadata:
   description: Provides a RabbitMQ cluster to your plan
   visibility: public
 spec:
+  type: instance
+  ports:
+    primary:
+      type: amqp
   icon:
     type: url
     value: https://storage.googleapis.com/kapeta-public-cdn/icons/rabbitmq.svg
@@ -310,7 +314,6 @@ spec:
                                   type: string
                               matchAll:
                                 type: boolean
-  type: instance
   local:
     image: rabbitmq:3.12.12-management-alpine
     singleton: true
