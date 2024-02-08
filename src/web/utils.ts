@@ -7,6 +7,13 @@ import { ResourceWithSpec } from '@kapeta/ui-web-types';
 
 import { RabbitMQBaseSpec, RabbitMQExchangeSpec } from '@kapeta/sdk-rabbitmq';
 
+// @ts-ignore
+import Definitions from '../../kapeta.yml'
+
+export const getDefinition = (name: string):any => {
+    return Definitions.find((definition: any) => definition.metadata.name === name);
+}
+
 export function validateName(fieldName: string, name: string) {
     if (!name) {
         return;

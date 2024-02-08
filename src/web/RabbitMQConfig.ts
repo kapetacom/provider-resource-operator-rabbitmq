@@ -8,6 +8,7 @@ import { ICON, KIND_BLOCK, KIND_EXCHANGE, KIND_QUEUE } from './types';
 import { RabbitMQBlockEditorComponent } from './components/RabbitMQBlockEditorComponent';
 import { EntityHelpers } from '@kapeta/ui-web-components';
 import { RabbitMQBlockDefinition, RabbitMQExchangeResource, RabbitMQQueueResource } from '@kapeta/sdk-rabbitmq';
+import {getDefinition} from "./utils";
 
 const packageJson = require('../../package.json');
 
@@ -80,38 +81,7 @@ const blockTypeProvider: IBlockTypeProvider<RabbitMQBlockDefinition> = {
         }
         return errors;
     },
-    definition: {
-        kind: KIND_BLOCK,
-        metadata: {
-            name: KIND_BLOCK,
-            title: 'RabbitMQ',
-            description: 'Provides a RabbitMQ server to your plan',
-        },
-        spec: {
-            consumers: [],
-            icon: ICON,
-            schema: {
-                type: 'object',
-                properties: {
-                    icon: {
-                        $ref: '/core/icon-value',
-                    },
-                    entities: {
-                        $ref: '/core/entity-list',
-                    },
-                    consumers: {
-                        $ref: '/core/block-resource-list',
-                    },
-                    providers: {
-                        $ref: '/core/block-resource-list',
-                    },
-                },
-            },
-            defaultPort: {
-                type: 'amqp',
-            },
-        },
-    },
+    definition: getDefinition(KIND_BLOCK)
 };
 
 export default blockTypeProvider;

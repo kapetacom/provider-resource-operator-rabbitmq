@@ -4,7 +4,7 @@
  */
 
 import { ICON, KIND_EXCHANGE, KIND_PUBLISHER } from './types';
-import { createValidator, renameEntityReferences, resolveEntities } from './utils';
+import {createValidator, getDefinition, renameEntityReferences, resolveEntities} from './utils';
 import { IResourceTypeProvider, ResourceRole, ResourceProviderType } from '@kapeta/ui-web-types';
 import { Metadata } from '@kapeta/schemas';
 import { DSLData } from '@kapeta/kaplang-core';
@@ -26,24 +26,7 @@ export const RabbitMQPublisherConfig: IResourceTypeProvider<Metadata, RabbitMQPu
     renameEntityReferences,
     resolveEntities,
     validate: createValidator(false),
-    definition: {
-        kind: 'core/resource-type-internal',
-        metadata: {
-            name: KIND_PUBLISHER,
-            title: 'RabbitMQ Publisher',
-            description: 'Add a rabbitmq publisher to your block',
-        },
-        spec: {
-            // @ts-ignore
-            icon: ICON,
-            ports: [
-                {
-                    name: 'amqp',
-                    type: 'amqp',
-                },
-            ],
-        },
-    },
+    definition: getDefinition(KIND_PUBLISHER),
     capabilities: {
         directDSL: true,
     },

@@ -11,7 +11,7 @@ import { RabbitMQBaseSpec, RabbitMQSubscriberResource, RabbitMQPublisherResource
 import { IResourceTypeProvider, ResourceProviderType, ResourceRole, ResourceWithSpec } from '@kapeta/ui-web-types';
 
 import { EntityType, Metadata } from '@kapeta/schemas';
-import { createValidator, renameEntityReferences, resolveEntities } from './utils';
+import {createValidator, getDefinition, renameEntityReferences, resolveEntities} from './utils';
 import { RabbitMQSubscriberEditor } from './components/RabbitMQSubscriberEditor';
 import { DSLData } from '@kapeta/kaplang-core';
 
@@ -63,24 +63,7 @@ const RabbitMQSubscriberConfig: IResourceTypeProvider<Metadata, RabbitMQBaseSpec
     renameEntityReferences,
     resolveEntities,
     validate: createValidator(false),
-    definition: {
-        kind: 'core/resource-type-internal',
-        metadata: {
-            name: KIND_SUBSCRIBER,
-            title: 'RabbitMQ Subscriber',
-            description: 'Add a rabbitmq subscriber to your block',
-        },
-        spec: {
-            // @ts-ignore
-            icon: ICON,
-            ports: [
-                {
-                    name: 'amqp',
-                    type: 'amqp',
-                },
-            ],
-        },
-    },
+    definition: getDefinition(KIND_SUBSCRIBER),
     capabilities: {
         directDSL: true,
     },

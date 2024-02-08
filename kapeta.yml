@@ -310,6 +310,7 @@ spec:
                                   type: string
                               matchAll:
                                 type: boolean
+  type: instance
   local:
     image: rabbitmq:3.12.12-management-alpine
     singleton: true

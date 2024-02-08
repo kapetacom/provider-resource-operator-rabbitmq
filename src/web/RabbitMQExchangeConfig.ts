@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { ICON, KIND_EXCHANGE, KIND_PUBLISHER } from './types';
-import { createValidator, renameEntityReferences, resolveEntities } from './utils';
+import {ICON, KIND_EXCHANGE, KIND_PUBLISHER} from './types';
+import {createValidator, getDefinition, renameEntityReferences, resolveEntities} from './utils';
 import { IResourceTypeProvider, ResourceProviderType, ResourceRole, ResourceWithSpec } from '@kapeta/ui-web-types';
 import { EntityType, Metadata } from '@kapeta/schemas';
 import { DSLData } from '@kapeta/kaplang-core';
@@ -63,24 +63,7 @@ export const RabbitMQExchangeConfig: IResourceTypeProvider<Metadata, RabbitMQBas
             },
         },
     ],
-    definition: {
-        kind: 'core/resource-type-internal',
-        metadata: {
-            name: KIND_EXCHANGE,
-            title: 'RabbitMQ Exchange',
-            description: 'Add an exchange to RabbitMQ',
-        },
-        spec: {
-            // @ts-ignore
-            icon: ICON,
-            ports: [
-                {
-                    name: 'amqp',
-                    type: 'amqp',
-                },
-            ],
-        },
-    },
+    definition: getDefinition(KIND_EXCHANGE),
     capabilities: {
         directDSL: true,
         allowMultipleConnections: true,
