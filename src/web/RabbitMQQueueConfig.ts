@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-import {KIND_SUBSCRIBER, KIND_QUEUE, ICON} from './types';
-import {createValidator, getDefinition, renameEntityReferences, resolveEntities} from './utils';
+import { KIND_SUBSCRIBER, KIND_QUEUE, ICON } from './types';
+import { createValidator, getDefinition, renameEntityReferences, resolveEntities } from './utils';
 import { IResourceTypeProvider, ResourceRole, ResourceProviderType } from '@kapeta/ui-web-types';
 import { Metadata } from '@kapeta/schemas';
 import { DSLData } from '@kapeta/kaplang-core';

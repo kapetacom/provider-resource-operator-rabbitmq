@@ -77,7 +77,7 @@ module.exports = {
                 test: /\.ya?ml$/,
                 loader: 'yaml-loader',
                 options: {
-                    asStream: true
+                    asStream: true,
                 },
                 include: Path.resolve(__dirname, './'),
             },
