@@ -8,7 +8,8 @@ import { ICON, KIND_BLOCK, KIND_EXCHANGE, KIND_QUEUE } from './types';
 import { RabbitMQBlockEditorComponent } from './components/RabbitMQBlockEditorComponent';
 import { EntityHelpers } from '@kapeta/ui-web-components';
 import { RabbitMQBlockDefinition, RabbitMQExchangeResource, RabbitMQQueueResource } from '@kapeta/sdk-rabbitmq';
-import {getDefinition} from "./utils";
+import { getDefinition } from './utils';
+import { QueueBlockShapeComponent } from './QueueBlockShapeComponent';
 
 const packageJson = require('../../package.json');
 
@@ -18,6 +19,9 @@ const blockTypeProvider: IBlockTypeProvider<RabbitMQBlockDefinition> = {
     title: 'RabbitMQ',
     icon: ICON,
     editorComponent: RabbitMQBlockEditorComponent,
+    shapeWidth: 196,
+    getShapeHeight: (resourceHeight: number) => Math.max(140, resourceHeight + 50),
+    shapeComponent: QueueBlockShapeComponent,
     resourceKinds: [KIND_EXCHANGE, KIND_QUEUE],
     validate: (block: RabbitMQBlockDefinition) => {
         const errors: string[] = [];
@@ -81,7 +85,7 @@ const blockTypeProvider: IBlockTypeProvider<RabbitMQBlockDefinition> = {
         }
         return errors;
     },
-    definition: getDefinition(KIND_BLOCK)
+    definition: getDefinition(KIND_BLOCK),
 };
 
 export default blockTypeProvider;

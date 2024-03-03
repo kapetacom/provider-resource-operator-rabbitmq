@@ -11,7 +11,7 @@ import { RabbitMQBaseSpec, RabbitMQSubscriberResource, RabbitMQPublisherResource
 import { IResourceTypeProvider, ResourceProviderType, ResourceRole, ResourceWithSpec } from '@kapeta/ui-web-types';
 
 import { EntityType, Metadata } from '@kapeta/schemas';
-import {createValidator, getDefinition, renameEntityReferences, resolveEntities} from './utils';
+import { createValidator, getDefinition, renameEntityReferences, resolveEntities } from './utils';
 import { RabbitMQSubscriberEditor } from './components/RabbitMQSubscriberEditor';
 import { DSLData } from '@kapeta/kaplang-core';
 

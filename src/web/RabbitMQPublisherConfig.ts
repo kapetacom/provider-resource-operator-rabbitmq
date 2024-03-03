@@ -4,7 +4,7 @@
  */
 
 import { ICON, KIND_EXCHANGE, KIND_PUBLISHER } from './types';
-import {createValidator, getDefinition, renameEntityReferences, resolveEntities} from './utils';
+import { createValidator, getDefinition, renameEntityReferences, resolveEntities } from './utils';
 import { IResourceTypeProvider, ResourceRole, ResourceProviderType } from '@kapeta/ui-web-types';
 import { Metadata } from '@kapeta/schemas';
 import { DSLData } from '@kapeta/kaplang-core';
