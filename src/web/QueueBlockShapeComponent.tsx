@@ -20,6 +20,9 @@ export const QueueBlockShapeComponent = <TBlockType extends RabbitMQBlockDefinit
 ) => {
     // Scaling the topbar svg to fit the block
     const block = useBlock();
+    const idPrefix = `queue-${props.instance.id.replace(/[^a-z0-9]/ig, '')}`;
+    const consumerMaskId = `${idPrefix}-consumer-mask`;
+    const providerMaskId = `${idPrefix}-provider-mask`;
 
     return (
         <g className="block-node" style={{ cursor: block.readOnly ? 'default' : 'move' }}>
@@ -37,7 +40,7 @@ export const QueueBlockShapeComponent = <TBlockType extends RabbitMQBlockDefinit
                 strokeOpacity="0.12"
             />
             {/* Consumer BG */}
-            <mask id="consumer-mask">
+            <mask id={consumerMaskId}>
                 <rect x="0" y="0" width="23" height={props.height} fill="white" />
             </mask>
             <rect
@@ -49,11 +52,11 @@ export const QueueBlockShapeComponent = <TBlockType extends RabbitMQBlockDefinit
                 fill="black"
                 fillOpacity="0.12"
                 strokeWidth={'0'}
-                mask={'url(#consumer-mask)'}
+                mask={`url(#${consumerMaskId})`}
             />
 
             {/* Provider BG */}
-            <mask id="provider-mask">
+            <mask id={providerMaskId}>
                 <rect x={props.width - 41 + 23 - 5.5} y="0" width="23" height={props.height} fill="white" />
             </mask>
             <rect
@@ -65,7 +68,7 @@ export const QueueBlockShapeComponent = <TBlockType extends RabbitMQBlockDefinit
                 fill="black"
                 fillOpacity="0.12"
                 strokeWidth={'0'}
-                mask={'url(#provider-mask)'}
+                mask={`url(#${providerMaskId})`}
             />
             {/* Consumer icon */}
             <svg
